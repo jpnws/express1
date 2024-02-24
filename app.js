@@ -40,6 +40,10 @@ app.post("/accounts", (req, res) => {
   res.json(accounts);
 });
 
+app.get("/health_check", (_, res) => {
+  res.status(200).end();
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
