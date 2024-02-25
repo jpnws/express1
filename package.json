@@ -6,9 +6,9 @@
   "description": "",
   "main": "./src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon server.js",
-    "start:ci": "cross-env NODE_ENV=ci nodemon server.js",
+    "start": "node ./src/server.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "start:ci": "cross-env NODE_ENV=ci nodemon ./src/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
   },
   "author": "",
