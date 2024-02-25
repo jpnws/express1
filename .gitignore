@@ -1,1 +1,10 @@
 node_modules
+
+# Configuration files
+config/default.json
+config/development.json
+config/production.json
+config/test.json
+
+.env
+

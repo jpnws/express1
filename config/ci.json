@@ -1,0 +1,11 @@
+{
+  "ci": {
+    "app": {
+      "host": "127.0.0.1",
+      "baseUrl": "http://127.0.0.1"
+    },
+    "db": {
+      "host": "localhost"
+    }
+  }
+}
