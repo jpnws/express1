@@ -3,7 +3,7 @@ import http from "http";
 import pgPromise from "pg-promise";
 import { v4 as uuidv4 } from "uuid";
 
-import { getConfig } from "../../src/cfg.js";
+import { getConfig, withDb, withoutDb } from "../../src/cfg.js";
 import { createTables } from "../../util/create-tables.js";
 
 import { createApp } from "../../src/app.js";
@@ -41,48 +41,45 @@ export const spawnApp = async () => {
   return { server, port, db, cfg };
 };
 
-const spawnDb = async (dbCfg) => {
-  const cfgWithoutDb = {
-    host: dbCfg.host,
-    port: dbCfg.port,
-    user: dbCfg.user,
-    password: dbCfg.password,
-  };
+const spawnDb = async (dbConfig) => {
+  // Create a test database.
+  const connectionOptionsWithoutDb = withoutDb(dbConfig);
 
-  const withoutDb = pgp(cfgWithoutDb);
+  console.log(connectionOptionsWithoutDb);
+
+  const dbConnectionWithoutDb = pgp(connectionOptionsWithoutDb);
 
   try {
-    await withoutDb.none(`CREATE DATABASE "${dbCfg.database}";`);
+    await dbConnectionWithoutDb.none(`CREATE DATABASE "${dbConfig.database}";`);
     console.log("Database created.");
   } catch (error) {
-    console.error(`Failed to create a test database: ${dbCfg.database}`);
+    console.error(`Failed to create a test database: ${dbConfig.database}`);
     throw error;
   }
 
-  const withDb = pgp(dbCfg);
+  // Create tables in the test database.
+  const connectionOptionsWithDb = withDb(dbConfig);
+  const dbConnectionWithDb = pgp(connectionOptionsWithDb);
 
   try {
-    await createTables(withDb);
+    await createTables(dbConnectionWithDb);
   } catch (error) {
-    console.error(`Failed to create a test database ${dbCfg.database}`);
+    console.error(`Failed to create tables for database: ${dbConfig.database}`);
     throw error;
   }
 
-  return withDb;
+  return dbConnectionWithDb;
 };
 
 export const closePgp = () => {
   pgp.end();
 };
 
-export const dropDb = async (cfg) => {
+export const dropDb = async (dbConfig) => {
   const dropDbConfig = {
-    host: cfg.db.host,
-    port: cfg.db.port,
+    ...dbConfig,
     database: "postgres",
-    user: cfg.db.user,
-    password: cfg.db.password,
   };
   const dropDb = pgp(dropDbConfig);
-  await dropDb.none("DROP DATABASE $1~", cfg.db.database);
+  await dropDb.none("DROP DATABASE $1~", dbConfig.database);
 };

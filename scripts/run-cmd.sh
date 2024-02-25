@@ -1,3 +1,3 @@
 ./clear-db.sh
-node create-tables.js
-node seed-db.js
+node ../util/create-tables.js
+node ../util/seed-db.js

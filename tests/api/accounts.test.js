@@ -22,7 +22,7 @@ describe("Accounts API", () => {
   afterEach(async () => {
     await server.close();
     closePgp();
-    await dropDb(cfg);
+    await dropDb(cfg.db);
   });
 
   it("creates a new account and returns a success message", async () => {
