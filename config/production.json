@@ -1,0 +1,7 @@
+{
+  "production": {
+    "db": {
+      "requireSsl": true
+    }
+  }
+}
