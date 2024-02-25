@@ -1,7 +1,7 @@
 import config from "config";
 
 export const getConfig = () => {
-  const appEnv = process.env.NODE_ENV || "local";
+  const appEnv = process.env.NODE_ENV || "development";
 
   let envConfig;
   try {
@@ -12,6 +12,9 @@ export const getConfig = () => {
   }
 
   const defaultConfig = config.get("default");
-  const conf = { ...defaultConfig, ...envConfig };
+  const conf = {
+    app: { ...defaultConfig.app, ...envConfig.app },
+    db: { ...defaultConfig.db, ...envConfig.db },
+  };
   return conf;
 };
