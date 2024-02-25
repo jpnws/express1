@@ -1,9 +1,6 @@
 import request from "supertest";
-import pgPromise from "pg-promise";
 
 import { spawnApp, closePgp, dropDb } from "./helpers.js";
-
-const pgp = pgPromise();
 
 describe("Accounts API", () => {
   let app;
@@ -19,6 +16,7 @@ describe("Accounts API", () => {
     port = spawn.port;
     db = spawn.db;
     cfg = spawn.cfg;
+    console.log(cfg);
   });
 
   afterEach(async () => {
@@ -32,6 +30,8 @@ describe("Accounts API", () => {
       username: "tester",
       role: "admin",
     };
+
+    console.log(`http://localhost:${port}`);
 
     const response = await request(`http://localhost:${port}`)
       .post("/accounts")

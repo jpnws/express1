@@ -43,14 +43,5 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # - name: Run Migrations
-      #   env:
-      #     PGUSER: postgres
-      #     PGPASSWORD: password
-      #     PGDATABASE: testdb
-      #     PGHOST: localhost
-      #     PGPORT: 5432
-      #   run: npm run migrate:test
-
       - name: Run Tests
         run: npm test

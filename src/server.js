@@ -1,10 +1,11 @@
-import app from "./app.js";
+import { createApp } from "./app.js";
 import { getConfig } from "./cfg.js";
+import { getDbConnection } from "./db.js";
 
 const conf = getConfig();
-console.log(conf);
-const port = conf.app.port || 3000;
+const db = getDbConnection(conf.db);
+const app = createApp(db);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+app.listen(conf.app.port, conf.app.host, () => {
+  console.log(`Listening on port ${conf.app.host}:${conf.app.port}`);
 });

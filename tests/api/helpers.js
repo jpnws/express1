@@ -6,32 +6,36 @@ import { v4 as uuidv4 } from "uuid";
 import { getConfig } from "../../src/cfg.js";
 import { createTables } from "../../util/create-tables.js";
 
-import app from "../../src/app.js";
+import { createApp } from "../../src/app.js";
 
 const pgp = pgPromise();
 
 export const spawnApp = async () => {
-  const c = getConfig();
+  const conf = getConfig();
+
   let cfg = {
     app: {
-      ...c.app,
+      ...conf.app,
       port: 0,
     },
     db: {
-      ...c.db,
+      ...conf.db,
       database: `${uuidv4()}`,
     },
   };
 
   const db = await spawnDb(cfg.db);
 
+  const app = createApp(db);
+
   const server = http.createServer(app);
 
   await new Promise((resolve) => {
-    server.listen(cfg.app.port, resolve);
+    server.listen(cfg.app.port, cfg.app.host, resolve);
   });
 
   const address = server.address();
+
   const port = typeof address === "string" ? address : address?.port;
 
   return { server, port, db, cfg };
@@ -49,6 +53,7 @@ const spawnDb = async (dbCfg) => {
 
   try {
     await withoutDb.none(`CREATE DATABASE "${dbCfg.database}";`);
+    console.log("Database created.");
   } catch (error) {
     console.error(`Failed to create a test database: ${dbCfg.database}`);
     throw error;

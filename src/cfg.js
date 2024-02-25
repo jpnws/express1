@@ -1,13 +1,13 @@
 import config from "config";
 
 export const getConfig = () => {
-  const appEnv = process.env.NODE_ENV || "development";
+  const appEnv = process.env.NODE_ENV;
 
   let envConfig;
   try {
     envConfig = config.get(appEnv);
   } catch (error) {
-    // console.warn(`No configuration found for ${appEnv}, using default.`);
+    console.warn(`No configuration found for ${appEnv}, using default.`);
     envConfig = {};
   }
 
@@ -16,5 +16,6 @@ export const getConfig = () => {
     app: { ...defaultConfig.app, ...envConfig.app },
     db: { ...defaultConfig.db, ...envConfig.db },
   };
+
   return conf;
 };
