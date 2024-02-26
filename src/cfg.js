@@ -64,7 +64,7 @@ const getProdEnvConfig = (appEnv) => {
 /**
  * Build the postgres connection configuration WITHOUT the database name.
  */
-export const withoutDb = (dbConfig) => {
+export const getConfigWithoutDb = (dbConfig) => {
   return {
     host: dbConfig.host,
     port: dbConfig.port,
@@ -77,9 +77,9 @@ export const withoutDb = (dbConfig) => {
 /**
  * Build the postgres connection configuration WITH the database name.
  */
-export const withDb = (dbConfig) => {
+export const getConfigWithDb = (dbConfig) => {
   return {
-    ...withoutDb(dbConfig),
+    ...getConfigWithoutDb(dbConfig),
     database: dbConfig.database,
   };
 };

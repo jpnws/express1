@@ -1,12 +1,12 @@
 import express from "express";
 
-export const createApp = (db) => {
+export const createApp = (pool) => {
   const app = express();
   app.use(express.json());
 
   app.get("/accounts", async (_, res) => {
     try {
-      const accounts = await db.query(
+      const accounts = await pool.query(
         `
       SELECT
         *
@@ -23,7 +23,7 @@ export const createApp = (db) => {
   app.get("/accounts/:id", async (req, res) => {
     try {
       const accountId = Number(req.params.id);
-      const accountResult = await db.query(
+      const accountResult = await pool.query(
         `
       SELECT
         *
@@ -47,7 +47,7 @@ export const createApp = (db) => {
   app.post("/accounts", (req, res) => {
     const account = req.body;
     try {
-      db.query(
+      pool.query(
         `
       INSERT INTO
         accounts (username, role)

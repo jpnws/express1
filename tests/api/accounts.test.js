@@ -1,56 +1,54 @@
 import request from "supertest";
+import { describe, beforeEach, afterEach, it, expect } from "jest";
 
-import { spawnApp, closePgp, dropDb } from "./helpers.js";
+import { spawnApp, dropDb } from "./helpers.js";
 
 describe("Accounts API", () => {
-  let app;
   let server;
   let port;
-  let db;
+  let pool;
   let cfg;
 
   beforeEach(async () => {
-    const spawn = await spawnApp();
-    app = spawn.app;
-    server = spawn.server;
-    port = spawn.port;
-    db = spawn.db;
-    cfg = spawn.cfg;
-    console.log(cfg);
+    const app = await spawnApp();
+    server = app.server;
+    port = app.port;
+    pool = app.pool;
+    cfg = app.cfg;
   });
 
   afterEach(async () => {
     await server.close();
-    closePgp();
+    await pool.end();
     await dropDb(cfg.db);
   });
 
   it("creates a new account and returns a success message", async () => {
-    // * ======================================================================
+    // * ===============================
     // * Arrange
-    // * ======================================================================
+    // * ===============================
     const newAccount = {
       username: "tester",
       role: "admin",
     };
-    // * ======================================================================
+    // * ===============================
     // * Act
-    // * ======================================================================
-    const response = await request(`http://localhost:${port}`)
+    // * ===============================
+    const response = await request(`http://${cfg.app.host}:${port}`)
       .post("/accounts")
       .send(newAccount)
       .expect("Content-Type", /json/)
       .expect(201);
-    // * ======================================================================
+    // * ===============================
     // * Assert
-    // * ======================================================================
+    // * ===============================
     expect(response.body).toEqual({ message: "Account created." });
   });
 
   it("inserts dummy accounts and returns a list of accounts", async () => {
-    // * ======================================================================
+    // * ===============================
     // * Arrange
-    // * ======================================================================
+    // * ===============================
     let accounts = [
       {
         username: "paulhal",
@@ -66,27 +64,25 @@ describe("Accounts API", () => {
       },
     ];
     for (const account of accounts) {
-      await db.query(
-        `
-        INSERT INTO
-          accounts (username, role)
-        VALUES
-          ($1, $2)
-        `,
-        [account.username, account.role]
-      );
+      const response = await request(`http://${cfg.app.host}:${port}`)
+        .post("/accounts")
+        .send(account)
+        .expect("Content-Type", /json/)
+        .expect(201);
+      expect(response.body).toEqual({ message: "Account created." });
     }
-    // * ======================================================================
+    // * ===============================
     // * Act
-    // * ======================================================================
-    const response = await request(`http://localhost:${port}`)
+    // * ===============================
+    const response = await request(`http://${cfg.app.host}:${port}`)
       .get("/accounts")
       .expect("Content-Type", /json/)
       .expect(200);
-    // * ======================================================================
+    // * ===============================
     // * Assert
-    // * ======================================================================
-    const responseAccounts = response.body;
+    // * ===============================
+    const responseAccounts = response.body.rows;
+    console.log(responseAccounts);
     for (let i = 0; i < accounts.length; i++) {
       expect(responseAccounts[i].username).toEqual(accounts[i].username);
       expect(responseAccounts[i].role).toEqual(accounts[i].role);

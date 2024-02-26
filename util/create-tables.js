@@ -1,13 +1,13 @@
-export const createTables = async (db) => {
+export const createTables = async (pool) => {
   try {
-    await db.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS accounts (
         id SERIAL PRIMARY KEY,
         username VARCHAR(255),
         role VARCHAR(255)
       );
     `);
-    console.log("Database created successfully.");
+    console.log("Tables created successfully.");
   } catch (err) {
     console.error("Error creating table:", err);
   }
