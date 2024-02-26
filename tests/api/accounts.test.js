@@ -1,5 +1,6 @@
 import request from "supertest";
-import { describe, beforeEach, afterEach, it, expect } from "jest";
+
+import { describe, beforeEach, afterEach, it, expect } from "@jest/globals";
 
 import { spawnApp, dropDb } from "./helpers.js";
 
@@ -82,7 +83,6 @@ describe("Accounts API", () => {
     // * Assert
     // * ===============================
     const responseAccounts = response.body.rows;
-    console.log(responseAccounts);
     for (let i = 0; i < accounts.length; i++) {
       expect(responseAccounts[i].username).toEqual(accounts[i].username);
       expect(responseAccounts[i].role).toEqual(accounts[i].role);
