@@ -27,31 +27,23 @@ describe("Accounts API", () => {
   });
 
   it("creates a new account and returns a success message", async () => {
-    // * ==========================================
-    // * Arrange
-    // * ==========================================
+    // Arrange
     const newAccount = {
       username: "tester",
       role: "admin",
     };
-    // * ==========================================
-    // * Act
-    // * ==========================================
+    // Act
     const response = await request(`http://${host}:${port}`)
       .post("/accounts")
       .send(newAccount)
       .expect("Content-Type", /json/)
       .expect(201);
-    // * ==========================================
-    // * Assert
-    // * ==========================================
+    // Assert
     expect(response.body).toEqual({ message: "Account created." });
   });
 
   it("inserts dummy accounts and returns a list of accounts", async () => {
-    // * ==========================================
-    // * Arrange
-    // * ==========================================
+    // Arrange
     let accounts = [
       {
         username: "paulhal",
@@ -74,16 +66,12 @@ describe("Accounts API", () => {
         .expect(201);
       expect(response.body).toEqual({ message: "Account created." });
     }
-    // * ==========================================
-    // * Act
-    // * ==========================================
+    // Act
     const response = await request(`http://${host}:${port}`)
       .get("/accounts")
       .expect("Content-Type", /json/)
       .expect(200);
-    // * ==========================================
-    // * Assert
-    // * ==========================================
+    // Assert
     const responseAccounts = response.body;
     for (let i = 0; i < accounts.length; i++) {
       expect(responseAccounts[i].username).toEqual(accounts[i].username);
