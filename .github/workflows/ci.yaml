@@ -13,9 +13,12 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: testdb
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_NAME: testdb
+          DB_USER: postgres
+          DB_PASS: password
+          DB_SSL: false
         ports:
           - 5432:5432
         options: >-
