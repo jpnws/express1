@@ -65,16 +65,16 @@ export default class Helper {
       throw error;
     }
 
-    // Retrieve the Express app.
+    // Create an instance of the Express app.
     const app = createApp(pool);
 
-    // Create the HTTP server.
+    // Create the HTTP server with the app.
     const server = http.createServer(app);
 
     // Get the app's host environment value.
     const host = process.env.APP_HOST;
 
-    // Start the app server.
+    // Start listening on the host and a dynamically chosen port.
     await new Promise((resolve) => {
       server.listen(0, host, resolve);
     });
@@ -82,7 +82,7 @@ export default class Helper {
     // Retrieve the server's address object.
     const address = server.address();
 
-    // Get the dynamically chosen port.
+    // Get the dynamically chosen port number.
     const port = address.port;
 
     return { server, host, port, pool };
