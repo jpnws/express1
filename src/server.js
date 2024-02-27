@@ -14,7 +14,7 @@ const dbConfig = {
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  ssl: process.env.DB_SSL,
+  ssl: process.env.DB_SSL === "true",
 };
 
 const pool = new pg.Pool(dbConfig);
