@@ -1,12 +1,9 @@
 import http from "http";
 import pg from "pg";
 import { v4 as uuidv4 } from "uuid";
-import dotenv from "dotenv";
 
 import { createTables } from "../../util/create-tables.js";
 import { createApp } from "../../src/app.js";
-
-dotenv.config();
 
 export default class Helper {
   /**

@@ -1,9 +1,6 @@
 import pg from "pg";
-import dotenv from "dotenv";
 
 import { createApp } from "./app.js";
-
-dotenv.config();
 
 const appHost = process.env.APP_HOST;
 const appPort = process.env.APP_PORT;
