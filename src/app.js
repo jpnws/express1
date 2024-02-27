@@ -8,13 +8,13 @@ export const createApp = (pool) => {
     try {
       const accounts = await pool.query(
         `
-      SELECT
-        *
-      FROM
-        accounts;
-      `
+        SELECT
+          *
+        FROM
+          accounts;
+        `
       );
-      res.json(accounts);
+      res.json(accounts.rows);
     } catch (err) {
       console.error("Failed to fetch all accounts:", err);
     }
@@ -25,35 +25,35 @@ export const createApp = (pool) => {
       const accountId = Number(req.params.id);
       const accountResult = await pool.query(
         `
-      SELECT
-        *
-      FROM
-        accounts
-      WHERE
-        id = $1;
-      `,
+        SELECT
+          *
+        FROM
+          accounts
+        WHERE
+          id = $1;
+        `,
         [accountId]
       );
-      if (!accountResult) {
+      if (accountResult.rowCount === 0) {
         res.status(500).send("Account not found.");
       } else {
-        res.json(accountResult);
+        res.json(accountResult.rows[0]);
       }
     } catch (err) {
       console.error("Failed to retrieve account:", err);
     }
   });
 
-  app.post("/accounts", (req, res) => {
+  app.post("/accounts", async (req, res) => {
     const account = req.body;
     try {
-      pool.query(
+      await pool.query(
         `
-      INSERT INTO
-        accounts (username, role)
-      VALUES
-        ($1, $2)
-      `,
+        INSERT INTO
+          accounts (username, role)
+        VALUES
+          ($1, $2)
+        `,
         [account.username, account.role]
       );
       res.status(201).json({ message: "Account created." });
