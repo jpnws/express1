@@ -4,6 +4,11 @@ on: [push, pull_request]
 
 env:
   NODE_ENV: test
+  APP_HOST: 127.0.0.1
+  DB_HOST: 127.0.0.1
+  DB_PORT: 5432
+  DB_USER: postgres
+  DB_PASSWORD: password
 
 jobs:
   build-and-test:
