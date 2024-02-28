@@ -26,23 +26,25 @@ describe("Accounts API", () => {
     await helper.dropDb();
   });
 
-  it("creates a new account and returns a success message", async () => {
+  it("creates a new account and checks the response against the expected", async () => {
     // Arrange
     const newAccount = {
       username: "tester",
       role: "admin",
     };
     // Act
-    const response = await request(`http://${host}:${port}`)
+    const account = await request(`http://${host}:${port}`)
       .post("/accounts")
       .send(newAccount)
       .expect("Content-Type", /json/)
       .expect(201);
     // Assert
-    expect(response.body).toEqual({ message: "Account created." });
+    // Compare the response body to the expected value
+    expect(account.body.username).toEqual(newAccount.username);
+    expect(account.body.role).toEqual(newAccount.role);
   });
 
-  it("inserts dummy accounts and returns a list of accounts", async () => {
+  it("inserts accounts and returns a list of accounts", async () => {
     // Arrange
     let accounts = [
       {
@@ -59,12 +61,11 @@ describe("Accounts API", () => {
       },
     ];
     for (const account of accounts) {
-      const response = await request(`http://${host}:${port}`)
+      await request(`http://${host}:${port}`)
         .post("/accounts")
         .send(account)
         .expect("Content-Type", /json/)
         .expect(201);
-      expect(response.body).toEqual({ message: "Account created." });
     }
     // Act
     const response = await request(`http://${host}:${port}`)
@@ -77,5 +78,27 @@ describe("Accounts API", () => {
       expect(responseAccounts[i].username).toEqual(accounts[i].username);
       expect(responseAccounts[i].role).toEqual(accounts[i].role);
     }
+  });
+
+  it("creates an account and retrieves it by its ID", async () => {
+    // Arrange
+    const newAccount = {
+      username: "tester",
+      role: "admin",
+    };
+    // Act
+    const response = await request(`http://${host}:${port}`)
+      .post("/accounts")
+      .send(newAccount)
+      .expect("Content-Type", /json/)
+      .expect(201);
+    const accountId = response.body.id;
+    const account = await request(`http://${host}:${port}`)
+      .get(`/accounts/${accountId}`)
+      .expect("Content-Type", /json/)
+      .expect(200);
+    // Assert
+    expect(account.body.username).toEqual(newAccount.username);
+    expect(account.body.role).toEqual(newAccount.role);
   });
 });

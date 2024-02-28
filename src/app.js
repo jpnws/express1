@@ -17,15 +17,15 @@ export const createApp = (prisma) => {
   app.get("/accounts/:id", async (req, res) => {
     try {
       const accountId = Number(req.params.id);
-      const accountResult = await prisma.account.findUnique({
+      const account = await prisma.account.findUnique({
         where: {
           id: accountId,
         },
       });
-      if (!accountResult) {
+      if (!account) {
         res.status(500).send("Account not found.");
       } else {
-        res.json(accountResult);
+        res.json(account);
       }
     } catch (err) {
       console.error("Failed to retrieve account:", err);
@@ -36,13 +36,13 @@ export const createApp = (prisma) => {
   app.post("/accounts", async (req, res) => {
     const account = req.body;
     try {
-      await prisma.account.create({
+      const newAccount = await prisma.account.create({
         data: {
           username: account.username,
           role: account.role,
         },
       });
-      res.status(201).json({ message: "Account created." });
+      res.status(201).json(newAccount);
     } catch (error) {
       console.error("Failed to insert account:", error);
       res.status(500).send("Failed to create account.");
