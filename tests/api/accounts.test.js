@@ -9,7 +9,7 @@ describe("Accounts API", () => {
   let server;
   let host;
   let port;
-  let pool;
+  let prisma;
 
   beforeEach(async () => {
     helper = new Helper();
@@ -17,12 +17,12 @@ describe("Accounts API", () => {
     server = appData.server;
     host = appData.host;
     port = appData.port;
-    pool = appData.pool;
+    prisma = appData.prisma;
   });
 
   afterEach(async () => {
     await server.close();
-    await pool.end();
+    await prisma.$disconnect();
     await helper.dropDb();
   });
 

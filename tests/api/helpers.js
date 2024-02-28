@@ -3,8 +3,10 @@ import pg from "pg";
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 
-import { createTables } from "../../util/create-tables.js";
+import { exec } from "child_process";
+
 import { createApp } from "../../src/app.js";
+import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
 
@@ -25,10 +27,12 @@ export default class Helper {
       port: process.env.DB_PORT,
       ssl: process.env.DB_SSL === "true" ? true : false,
     };
-    this.configWithDb = {
-      ...this.configWithoutDb,
-      database: this.dbName,
-    };
+
+    this.dbUrl = `postgresql://${process.env.DB_USER}:${process.env.DB_PASS}@${
+      process.env.DB_HOST
+    }:${process.env.DB_PORT}/${this.dbName}?sslmode=${
+      process.env.DB_SSL === "true" ? "require" : "disable"
+    }&schema=public`;
   }
 
   /**
@@ -55,18 +59,46 @@ export default class Helper {
       await connectionWithoutDb.end();
     }
 
-    // Create tables in the test database.
-    const pool = new pg.Pool(this.configWithDb);
-    try {
-      await createTables(pool);
-    } catch (error) {
-      console.error(`Failed to create tables for database: ${this.dbName}`);
-      console.error(error);
-      throw error;
-    }
+    // Function to execute a command and return a promise
+    const execPromise = (cmd) => {
+      return new Promise((resolve, reject) => {
+        exec(cmd, (error, stdout, stderr) => {
+          if (error) {
+            reject({ error, stderr });
+          } else {
+            resolve(stdout);
+          }
+        });
+      });
+    };
+
+    // Run Prisma migrations.
+    const runMigrations = async () => {
+      try {
+        const migrationOutput = await execPromise(
+          `cross-env DATABASE_URL="${this.dbUrl}" npx prisma migrate deploy`
+        );
+        console.log("Migration successful:", migrationOutput);
+      } catch (error) {
+        console.error("Migration failed:", error);
+      }
+    };
+
+    // Migrate the database.
+    await runMigrations();
+
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: this.dbUrl,
+        },
+      },
+    });
+
+    await prisma.$connect();
 
     // Create an instance of the Express app.
-    const app = createApp(pool);
+    const app = createApp(prisma);
 
     // Create the HTTP server with the app.
     const server = http.createServer(app);
@@ -85,7 +117,7 @@ export default class Helper {
     // Get the dynamically chosen port number.
     const port = address.port;
 
-    return { server, host, port, pool };
+    return { server, host, port, prisma };
   }
 
   /**
