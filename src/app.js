@@ -17,6 +17,7 @@ export const createApp = (pool) => {
       res.json(accounts.rows);
     } catch (err) {
       console.error("Failed to fetch all accounts:", err);
+      res.status(500).send("Failed to fetch all accounts.");
     }
   });
 
@@ -41,6 +42,7 @@ export const createApp = (pool) => {
       }
     } catch (err) {
       console.error("Failed to retrieve account:", err);
+      res.status(500).send("Failed to retrieve account.");
     }
   });
 
