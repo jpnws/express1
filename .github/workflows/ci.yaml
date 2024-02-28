@@ -1,4 +1,4 @@
-name: CI
+name: ci
 
 on: [push, pull_request]
 
@@ -40,13 +40,13 @@ jobs:
       - uses: actions/checkout@v4
 
       # Install the Node.js runtime.
-      - name: Set up Node.js
+      - name: Set up node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       # Cache Node.js modules to speed up the build for future runs.
-      - name: Cache Node.js modules
+      - name: Cache node.js modules
         uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -54,8 +54,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Run Tests
+      - name: Run tests
         run: npm test
+
+      - name: Apply migrations to production database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
